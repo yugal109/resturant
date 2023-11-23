@@ -1,0 +1,49 @@
+on:
+  push:
+    branches:
+      - main-disabled # enable later on!
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: yarn install
+
+      - name: 🎯 Setup build numbers # extracts github buildnumber and add it in app.json
+        run: |
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+          echo "APP_VERSION=$( npx json -f app.json expo.version)" >> $GITHUB_ENV
+
+      - name: 📲 update build numbers
+        run: |
+          echo "App Version: ${{ env.APP_VERSION }}, Build: ${{ env.BUILD_NUMBER }}"
+          npx json -I -f app.json -e "this.expo.android.versionCode = ${{ env.BUILD_NUMBER }}"
+          npx json -I -f app.json -e "this.expo.ios.buildNumber = '${{ env.BUILD_NUMBER }}'"
+
+      - name: 🚀 Build app
+        run: eas build --profile production --auto-submit --platform all --non-interactive --no-wait
+
+      - name: 📦 git tag artifacts
+        run: |
+          git config --global user.name 'CI'
+          git config --global user.email 'bvsapkota@gmail.com'
+          git add app.json
+          git commit -m "Release app with version: ${{ env.APP_VERSION }} (${{ env.BUILD_NUMBER }})"
+          git tag "${{env.APP_VERSION}}_${{env.BUILD_NUMBER}}"
+          git push --tags

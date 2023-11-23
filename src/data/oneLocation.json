@@ -1,0 +1,13 @@
+{
+    "data":{
+            "following":true,
+            "totalFollowers":2200,
+            "min":11.40,
+            "discount":10
+    },
+    "menus":[
+        {"title":"Burger menu's","id":1},
+        {"title":"Kids menu's","id":2},
+        {"title":"Dumplings","id":3}
+    ]
+}

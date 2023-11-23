@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 2.1.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "stag"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "stag",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "production": {
+      "channel": "prod",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "terminal_production": {
+      "channel": "prod",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      },
+      "ios": {
+        "ascAppId": "6444166770"
+      }
+    }
+  }
+}
